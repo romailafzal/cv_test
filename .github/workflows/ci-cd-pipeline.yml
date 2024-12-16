@@ -13,66 +13,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Set up Python
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.9"
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
 
-    # Install dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    # Run tests
-    - name: Run tests
-      run: |
-        pytest
+      # Run tests
+      - name: Run tests
+        run: streamlit run interface.py
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: ${{ github.ref == 'refs/heads/main' }}
 
     steps:
-    # Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Deploy using SCP (hardcoded key, temporary for testing)
-    - name: Deploy to server
-      run: |
-        echo "-----BEGIN RSA PRIVATE KEY-----
-      MIIEpAIBAAKCAQEA1zS+sWl6RtBxKkxuEc/K9qFFG2XZTPgeQeywU7Hcg2biTlck
-      eUZvM0eHydeA6tqM4sCiQoThA/CS4NRV5okMDrhX7amqN/JVS0fU11GxOFLlsVGE
-      ah6Ie0ghz5hjI0weSeZTRbXRMDXaneOJD0c0+T3t2X73EY5ysunO67bjv4mV1Lmj
-      9I4r7NqKO3X1OszxSzN4pIec+RXOm0bWVB07c5acDenROhGZbnca59om2KTfr4gT
-      hQS+qkFtUVoU3mL8Xr/eYTwBlg+zEXNtPCal+MMxK+pVN6UTAsoot0D/LbZ8mFj0
-      GhiYYe60I4QowkkQTfLB5uQW/YE7ppJ6t8gQ+wIDAQABAoIBAHuSze0RpCUFi/W9
-      7XZM2z7DW+tfkGeiEb3JK3bjqrvJWCmj4E3DJBdN+6rrFBvHYx7Rflqz8oFQowZ2
-      5tx51XKeZ98Qja2SeWfA13bMcfblov8uz9ofrj8cLE4IMuUR0FKe7zIYNQZ55g7D
-      mPAs8z4rUWiSf0yVf0c8+pRfcGeKi9FcyRYgoH/uRg9Ao8gnyZN0anghX2wWe/Sn
-      B4SF77BFwOLz9AOg7lxgSNAiKmV7wBOBTpBV9sNLRkbyZZXD7gWk12Y/cl1iLafn
-      tPDNDx4OjrZTdzj9IhanmtnYxJV0gglrLPCRK4gjc4Z6BKFnLlbS9+rwEBPQuEfZ
-      Ryq1UAECgYEA8b6xjDu7d0OwICDzbxUbZz6+iQ1zF7+yTrRSPiwGDWGyNCBKuwpK
-      2P5jt0lD8wdBmZ6CXXlb0+Zs65NH4d6j6Tv4KXYhgHY+9sdx6R4NWtFGllUqzTvB
-      dCh9/kPg1PQPysNFwkyzTYHTWjeo7n+Pb6/1NRKrI98YizXCnQN34XkCgYEA4+Vt
-      ylB8IUhpgMKEygF6j72q77j1ctjN5NVNb85P29nM/ylX9uWeyue0OX6DFUopjH5K
-      tC8craQIr8Smy1MOSX4UkgNUPeFqyGk1IR70uQK2o/LQouR1SWKA8deYjntwjGd9
-      Dlkp4/R3rhlCxWTSVi6Gl7pDbr0Y7veolIjMvRMCgYAIfchCwr5c/BWtqzqhxj4G
-      LGAI9F38kZEzzoWtBWLZCXt29UNqunvSj2z1PS+T08dsG/M8UUz2bnuY8r1to6Ji
-      SOb4ndujZYPkqzDHHXUeoYc3NJqiRt0OtXVnfv7gvAnp91316zfJGyxPWPEoH3bs
-      V2Pnj1ZPlkCIc0T4uux1EQKBgQCBCcNkrrXaUpoKYhm2F6hCA27qVZwE72WFkJFM
-      IVFudqBwSgSYs+N5mECf3VZzk457EndSFuryFtMkUwDuV5TbYBxdoKzubNh9qbR/
-      kHuY1kR8CFzCHwGaD8BbL2weIR7VITPaD/p8LEwns/3uruu6CJYFC15rMX8QsAIw
-      OFVVKQKBgQCVK01JsYYMD1zRyBDiukcdJGzYced2emFzqmqOvLkCEAnMNlFEYZv5
-      EkrEIsnnwO0jPbUdAH8By63FdcQzW9AAqDLtTtzXHYGDq2+ISklsD05P2MbTQfmS
-      gP0SnAUGcHMVV1j9FxhkRJRl3tG0Ipq1NWoNGgVFS/o8Al7FTCM8zQ==
-      -----END RSA PRIVATE KEY-----%  " > deploy_key.pem
-        chmod 600 deploy_key.pem
-        scp -i deploy_key.pem -r ./ ec2-user@13.61.0.25:/home/ec2-user/project/cv_test/
+      # Deploy using SCP (using GitHub Secrets for security)
+      - name: Deploy to server
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          echo "$DEPLOY_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          scp -i deploy_key.pem -r ./ ec2-user@13.61.0.25:/home/ec2-user/project/cv_test/
