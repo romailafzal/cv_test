@@ -29,9 +29,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Run tests
-      - name: Run tests
-        run: streamlit run interface.py
 
   deploy:
     runs-on: ubuntu-latest
